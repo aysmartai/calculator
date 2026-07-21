@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Online Calculator - Free Simple &amp; Scientific Calculator | Aysmartai</title>
+<meta name="description" content="Free online calculator with normal and scientific modes, keyboard shortcuts, and a calculation history log. Handles everyday math, percentages, trigonometry, logs, and more - fast, private, and works entirely in your browser.">
+<meta name="keywords" content="online calculator, free calculator, simple calculator, scientific calculator, math calculator, percentage calculator, calculator with history, web calculator">
+<meta name="robots" content="index, follow">
+<meta name="author" content="Aysmartai">
+<link rel="canonical" href="https://calculator.aysmartai.com/">
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://calculator.aysmartai.com/">
+<meta property="og:title" content="Online Calculator - Free Simple &amp; Scientific Calculator">
+<meta property="og:description" content="Free calculator with normal and scientific modes, a history log, and full keyboard support. Runs entirely in your browser - private and no sign-up required.">
+<meta property="og:site_name" content="Aysmartai">
+<meta property="og:locale" content="en_US">
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Online Calculator - Free Simple &amp; Scientific Calculator">
+<meta name="twitter:description" content="Free calculator with normal and scientific modes, a history log, and full keyboard support.">
+
+<!-- Structured data: WebApplication -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Online Calculator",
+  "url": "https://calculator.aysmartai.com/",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "description": "Free online calculator with normal and scientific modes, keyboard shortcuts, and a calculation history log. Runs entirely in the browser with no sign-up required.",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Aysmartai",
+    "email": "contact@aysmartai.com"
+  }
+}
+</script>
+
+<!-- Structured data: FAQ -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Is this calculator free to use?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, this online calculator is completely free with no sign-up required."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does this calculator have scientific functions?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, toggling to Scientific mode adds trigonometric functions, square roots, powers, logarithms, factorials, and constants like pi and e."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does this calculator keep a history of my calculations?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, recent calculations appear in a history log that can be clicked to reuse a result or cleared at any time."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does my calculation data get sent anywhere?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No, all calculations run locally in your browser. Nothing you type is sent to a server."
+      }
+    }
+  ]
+}
+</script>
+
+<style>
+  :root{
+    --bg:#0f1115;
+    --panel:#171a21;
+    --panel-2:#1e222b;
+    --border:#2a2f3a;
+    --text:#eef0f4;
+    --text-dim:#9aa1af;
+    --accent:#5b8cff;
+    --accent-2:#7fe0c4;
+    --danger:#ff6b6b;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:32px 16px 64px;
+  }
+  .wrap{width:100%;max-width:420px;}
+  h1{
+    font-size:28px;
+    font-weight:600;
+    margin:0 0 6px;
+    text-align:center;
+    letter-spacing:-0.02em;
+  }
+  .subtitle{
+    text-align:center;
+    color:var(--text-dim);
+    font-size:14px;
+    margin:0 0 28px;
+  }
+  .panel{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:14px;
+    padding:20px;
+    margin-bottom:20px;
+  }
+  .display{
+    background:var(--panel-2);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:18px 16px;
+    margin-bottom:16px;
+    text-align:right;
+    overflow:hidden;
+  }
+  .display .expr{
+    color:var(--text-dim);
+    font-size:14px;
+    min-height:18px;
+    word-break:break-all;
+  }
+  .display .value{
+    font-size:34px;
+    font-weight:600;
+    letter-spacing:-0.01em;
+    word-break:break-all;
+    min-height:42px;
+  }
+  .keys{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:10px;
+  }
+  .keys.scientific{
+    grid-template-columns:repeat(5,1fr);
+  }
+  .key{
+    background:var(--panel-2);
+    border:1px solid var(--border);
+    border-radius:10px;
+    color:var(--text);
+    font-size:18px;
+    font-weight:500;
+    padding:16px 0;
+    cursor:pointer;
+    transition:background .12s, opacity .12s;
+    user-select:none;
+    text-align:center;
+  }
+  .key:hover{background:#262b36;}
+  .key:active{opacity:.8;}
+  .key.op{
+    background:rgba(91,140,255,0.12);
+    color:var(--accent);
+    font-weight:600;
+  }
+  .key.op:hover{background:rgba(91,140,255,0.2);}
+  .key.equals{
+    background:var(--accent);
+    color:#fff;
+    grid-row:span 2;
+  }
+  .key.equals:hover{opacity:.88;background:var(--accent);}
+  .key.func{
+    color:var(--accent-2);
+    font-size:15px;
+  }
+  .key.sci{
+    color:var(--accent-2);
+    font-size:14px;
+  }
+  .key.clear{
+    color:var(--danger);
+  }
+  .key.zero{grid-column:span 2;}
+  .sci-only{display:none;}
+  .keys.scientific .sci-only{display:block;}
+  .mode-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:14px;
+  }
+  .mode-toggle{
+    display:flex;
+    background:var(--panel-2);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:3px;
+    gap:3px;
+  }
+  .mode-toggle button{
+    border:none;
+    background:transparent;
+    color:var(--text-dim);
+    font-size:13px;
+    font-weight:600;
+    padding:6px 14px;
+    border-radius:7px;
+    cursor:pointer;
+  }
+  .mode-toggle button.active{
+    background:var(--accent);
+    color:#fff;
+  }
+  .tooltip-wrap{
+    position:relative;
+    display:inline-flex;
+  }
+  .info-btn{
+    width:26px;height:26px;
+    border-radius:50%;
+    background:var(--panel-2);
+    border:1px solid var(--border);
+    color:var(--text-dim);
+    font-size:13px;
+    font-weight:700;
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer;
+  }
+  .info-btn:hover{color:var(--text);}
+  .tooltip-box{
+    display:none;
+    position:absolute;
+    right:0;
+    top:32px;
+    z-index:5;
+    width:250px;
+    background:var(--panel-2);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:12px 14px;
+    font-size:12px;
+    line-height:1.7;
+    color:var(--text-dim);
+    box-shadow:0 8px 24px rgba(0,0,0,0.35);
+  }
+  .tooltip-box.show{display:block;}
+  .tooltip-box strong{color:var(--text);}
+  .tooltip-box .row{display:flex;justify-content:space-between;gap:10px;}
+  .tooltip-box kbd{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:4px;
+    padding:1px 6px;
+    color:var(--text);
+    font-family:inherit;
+    font-size:11px;
+  }
+  .history-list{
+    max-height:220px;
+    overflow-y:auto;
+  }
+  .history-item{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    padding:8px 0;
+    border-bottom:1px solid var(--border);
+    font-size:14px;
+    cursor:pointer;
+  }
+  .history-item:last-child{border-bottom:none;}
+  .history-item .h-expr{color:var(--text-dim);font-size:13px;}
+  .history-item .h-result{color:var(--text);font-weight:600;}
+  .history-item:hover .h-result{color:var(--accent);}
+  .history-empty{
+    color:var(--text-dim);
+    font-size:13px;
+    text-align:center;
+    padding:12px 0;
+  }
+  .clear-history{
+    background:none;
+    border:none;
+    color:var(--text-dim);
+    font-size:12px;
+    cursor:pointer;
+    text-decoration:underline;
+  }
+  .clear-history:hover{color:var(--danger);}
+  .status{
+    text-align:center;
+    color:var(--text-dim);
+    font-size:12px;
+    margin-top:10px;
+  }
+  section.panel h2{
+    font-size:16px;
+    margin-top:0;
+  }
+  section.panel p{
+    color:var(--text-dim);
+    font-size:14px;
+    line-height:1.6;
+  }
+  section.panel p strong{color:var(--text);}
+  footer{
+    margin-top:24px;
+    text-align:center;
+    color:var(--text-dim);
+    font-size:12px;
+  }
+  .visually-hidden{
+    position:absolute;
+    width:1px;height:1px;
+    padding:0;margin:-1px;
+    overflow:hidden;
+    clip:rect(0,0,0,0);
+    white-space:nowrap;
+    border:0;
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <header>
+    <h1>Online Calculator</h1>
+    <p class="subtitle">Fast, free calculator for everyday math</p>
+  </header>
+
+  <section class="panel" aria-label="Calculator">
+    <div class="mode-row">
+      <div class="mode-toggle" role="group" aria-label="Calculator mode">
+        <button type="button" id="mode-normal" class="active" data-mode="normal">Normal</button>
+        <button type="button" id="mode-scientific" data-mode="scientific">Scientific</button>
+      </div>
+      <div class="tooltip-wrap">
+        <button type="button" class="info-btn" id="info-btn" aria-label="Keyboard shortcuts">?</button>
+        <div class="tooltip-box" id="tooltip-box" role="tooltip">
+          <strong>Keyboard shortcuts</strong>
+          <div class="row"><span>Numbers</span><kbd>0-9</kbd></div>
+          <div class="row"><span>Add / Subtract</span><kbd>+</kbd> <kbd>-</kbd></div>
+          <div class="row"><span>Multiply / Divide</span><kbd>*</kbd> <kbd>/</kbd></div>
+          <div class="row"><span>Decimal point</span><kbd>.</kbd></div>
+          <div class="row"><span>Calculate</span><kbd>Enter</kbd></div>
+          <div class="row"><span>Delete last digit</span><kbd>Backspace</kbd></div>
+          <div class="row"><span>Clear all</span><kbd>Esc</kbd></div>
+          <div class="row"><span>Percent</span><kbd>%</kbd></div>
+        </div>
+      </div>
+    </div>
+
+    <label for="calc-input" class="visually-hidden">Calculator display</label>
+    <div class="display">
+      <div class="expr" id="expr">&nbsp;</div>
+      <div class="value" id="value">0</div>
+    </div>
+
+    <div class="keys" id="keys">
+      <!-- Scientific-only row 1 -->
+      <div class="key sci sci-only" data-action="sin">sin</div>
+      <div class="key sci sci-only" data-action="cos">cos</div>
+      <div class="key sci sci-only" data-action="tan">tan</div>
+      <div class="key sci sci-only" data-action="pi">π</div>
+      <div class="key sci sci-only" data-action="e">e</div>
+
+      <!-- Scientific-only row 2 -->
+      <div class="key sci sci-only" data-action="sqrt">√</div>
+      <div class="key sci sci-only" data-action="square">x²</div>
+      <div class="key sci sci-only" data-action="pow">x^y</div>
+      <div class="key sci sci-only" data-action="log">log</div>
+      <div class="key sci sci-only" data-action="ln">ln</div>
+
+      <!-- Scientific-only row 3 -->
+      <div class="key sci sci-only" data-action="factorial">x!</div>
+      <div class="key sci sci-only" data-action="inv">1/x</div>
+      <div class="key sci sci-only" data-action="openparen">(</div>
+      <div class="key sci sci-only" data-action="closeparen">)</div>
+      <div class="key sci sci-only" data-action="mod">mod</div>
+
+      <div class="key clear" data-action="clear">AC</div>
+      <div class="key func" data-action="negate">±</div>
+      <div class="key func" data-action="percent">%</div>
+      <div class="key op" data-action="divide">÷</div>
+      <div class="key sci-only" style="visibility:hidden;"></div>
+
+      <div class="key" data-num="7">7</div>
+      <div class="key" data-num="8">8</div>
+      <div class="key" data-num="9">9</div>
+      <div class="key op" data-action="multiply">×</div>
+      <div class="key sci-only" style="visibility:hidden;"></div>
+
+      <div class="key" data-num="4">4</div>
+      <div class="key" data-num="5">5</div>
+      <div class="key" data-num="6">6</div>
+      <div class="key op" data-action="subtract">−</div>
+      <div class="key sci-only" style="visibility:hidden;"></div>
+
+      <div class="key" data-num="1">1</div>
+      <div class="key" data-num="2">2</div>
+      <div class="key" data-num="3">3</div>
+      <div class="key op" data-action="add">+</div>
+      <div class="key sci-only" style="visibility:hidden;"></div>
+
+      <div class="key zero" data-num="0">0</div>
+      <div class="key" data-action="decimal">.</div>
+      <div class="key equals" data-action="equals">=</div>
+      <div class="key sci-only" style="visibility:hidden;"></div>
+    </div>
+    <div class="status" id="status">Tip: your keyboard works too (numbers, + − * / . Enter Backspace Esc)</div>
+  </section>
+
+  <section class="panel" aria-label="Calculation history">
+    <div class="results-header" style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;">
+      <h2 style="font-size:15px;font-weight:600;margin:0;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.05em;">History</h2>
+      <button type="button" class="clear-history" id="clear-history">Clear</button>
+    </div>
+    <div class="history-list" id="history-list">
+      <div class="history-empty">No calculations yet</div>
+    </div>
+  </section>
+
+  <section class="panel" aria-label="About this calculator">
+    <h2>About This Calculator</h2>
+    <p>
+      This free online calculator handles everyday arithmetic - addition, subtraction, multiplication, division,
+      percentages, and sign changes - right in your browser. Switch to <strong>Scientific mode</strong> for
+      trigonometry (sin, cos, tan), square roots, powers, logarithms, factorials, and constants like π and e.
+      Every calculation is saved to a <strong>history log</strong> you can revisit or clear at any time.
+      No installation, no sign-up, and no data ever leaves your device. It works on desktop and mobile, and
+      supports full keyboard input for fast entry.
+    </p>
+  </section>
+
+  <section class="panel" aria-label="Frequently asked questions">
+    <h2>Frequently Asked Questions</h2>
+    <p><strong>Is this calculator free to use?</strong><br/>
+    Yes, completely free with no sign-up required.</p>
+    <p><strong>Does this calculator have scientific functions?</strong><br/>
+    Yes, toggle to Scientific mode for sin, cos, tan, square root, powers, logarithms, factorials, and more.</p>
+    <p><strong>Does this calculator keep a history of my calculations?</strong><br/>
+    Yes, recent calculations appear in the History panel below the calculator. Click any entry to reuse its
+    result, or use the Clear button to reset it.</p>
+    <p><strong>Does this calculator work on mobile?</strong><br/>
+    Yes, it's fully responsive and also supports keyboard input on desktop.</p>
+    <p><strong>Does my calculation data get sent anywhere?</strong><br/>
+    No, everything runs locally in your browser.</p>
+  </section>
+
+  <footer>
+    Local calculation only — nothing you type leaves your browser.<br/>
+    © 2026 aysmartai. All rights reserved. · <a href="mailto:contact@aysmartai.com" style="color:var(--text-dim);">contact@aysmartai.com</a>
+  </footer>
+</main>
+
+<script>
+(function(){
+  var exprEl = document.getElementById('expr');
+  var valueEl = document.getElementById('value');
+  var keysEl = document.getElementById('keys');
+  var historyListEl = document.getElementById('history-list');
+  var clearHistoryBtn = document.getElementById('clear-history');
+  var infoBtn = document.getElementById('info-btn');
+  var tooltipBox = document.getElementById('tooltip-box');
+  var modeNormalBtn = document.getElementById('mode-normal');
+  var modeSciBtn = document.getElementById('mode-scientific');
+
+  var state = {
+    current: '0',
+    previous: null,
+    operator: null,
+    justEvaluated: false,
+    pendingFunc: null // for x^y two-step entry
+  };
+
+  var history = [];
+  var MAX_HISTORY = 20;
+
+  function formatNumber(numStr){
+    if (numStr === '' || numStr === '-' ) return numStr;
+    if (numStr === 'Error') return 'Error';
+    var num = Number(numStr);
+    if (!isFinite(num)) return 'Error';
+    var s = num.toString();
+    if (s.length > 14) {
+      s = num.toPrecision(10).toString();
+    }
+    return s;
+  }
+
+  function opSymbol(op){
+    return {add:'+',subtract:'\u2212',multiply:'\u00D7',divide:'\u00F7',pow:'^',mod:'mod'}[op] || '';
+  }
+
+  function updateDisplay(){
+    valueEl.textContent = formatNumber(state.current);
+    if (state.operator && state.previous !== null){
+      exprEl.textContent = formatNumber(state.previous) + ' ' + opSymbol(state.operator);
+    } else {
+      exprEl.textContent = '\u00A0';
+    }
+  }
+
+  function inputDigit(d){
+    if (state.justEvaluated){
+      state.current = d;
+      state.justEvaluated = false;
+      return;
+    }
+    if (state.current === '0'){
+      state.current = d;
+    } else {
+      state.current = state.current + d;
+    }
+  }
+
+  function inputDecimal(){
+    if (state.justEvaluated){
+      state.current = '0.';
+      state.justEvaluated = false;
+      return;
+    }
+    if (state.current.indexOf('.') === -1){
+      state.current += '.';
+    }
+  }
+
+  function setOperator(op){
+    if (state.operator && state.previous !== null && !state.justEvaluated){
+      evaluate(true);
+    }
+    state.previous = state.current;
+    state.operator = op;
+    state.current = '0';
+    state.justEvaluated = false;
+  }
+
+  function pushHistory(exprText, result){
+    history.unshift({expr: exprText, result: result});
+    if (history.length > MAX_HISTORY) history.pop();
+    renderHistory();
+  }
+
+  function evaluate(silent){
+    if (state.operator === null || state.previous === null) return;
+    var a = parseFloat(state.previous);
+    var b = parseFloat(state.current);
+    var result;
+    switch(state.operator){
+      case 'add': result = a + b; break;
+      case 'subtract': result = a - b; break;
+      case 'multiply': result = a * b; break;
+      case 'divide': result = b === 0 ? NaN : a / b; break;
+      case 'pow': result = Math.pow(a, b); break;
+      case 'mod': result = b === 0 ? NaN : a % b; break;
+      default: result = b;
+    }
+    var exprText = formatNumber(state.previous) + ' ' + opSymbol(state.operator) + ' ' + formatNumber(state.current);
+    var resultStr = isNaN(result) ? 'Error' : String(result);
+    if (!silent){
+      pushHistory(exprText, formatNumber(resultStr));
+    }
+    state.current = resultStr;
+    state.previous = null;
+    state.operator = null;
+    state.justEvaluated = true;
+  }
+
+  function clearAll(){
+    state.current = '0';
+    state.previous = null;
+    state.operator = null;
+    state.justEvaluated = false;
+  }
+
+  function negate(){
+    if (state.current === '0') return;
+    state.current = state.current.charAt(0) === '-' ? state.current.slice(1) : '-' + state.current;
+  }
+
+  function percent(){
+    var num = parseFloat(state.current);
+    if (isNaN(num)) return;
+    state.current = String(num / 100);
+  }
+
+  function backspace(){
+    if (state.justEvaluated) { clearAll(); return; }
+    if (state.current.length <= 1 || (state.current.length === 2 && state.current.charAt(0) === '-')){
+      state.current = '0';
+    } else {
+      state.current = state.current.slice(0, -1);
+    }
+  }
+
+  function toRad(deg){ return deg * Math.PI / 180; }
+
+  function applyUnaryFunc(action){
+    var num = parseFloat(state.current);
+    if (isNaN(num)) return;
+    var result, label;
+    switch(action){
+      case 'sin': result = Math.sin(toRad(num)); label = 'sin(' + formatNumber(state.current) + ')'; break;
+      case 'cos': result = Math.cos(toRad(num)); label = 'cos(' + formatNumber(state.current) + ')'; break;
+      case 'tan': result = Math.tan(toRad(num)); label = 'tan(' + formatNumber(state.current) + ')'; break;
+      case 'sqrt': result = num < 0 ? NaN : Math.sqrt(num); label = '\u221A(' + formatNumber(state.current) + ')'; break;
+      case 'square': result = num * num; label = '(' + formatNumber(state.current) + ')\u00B2'; break;
+      case 'log': result = num <= 0 ? NaN : Math.log10(num); label = 'log(' + formatNumber(state.current) + ')'; break;
+      case 'ln': result = num <= 0 ? NaN : Math.log(num); label = 'ln(' + formatNumber(state.current) + ')'; break;
+      case 'inv': result = num === 0 ? NaN : 1 / num; label = '1/(' + formatNumber(state.current) + ')'; break;
+      case 'factorial':
+        if (num < 0 || Math.floor(num) !== num || num > 170){ result = NaN; }
+        else { result = 1; for (var i=2;i<=num;i++){ result *= i; } }
+        label = formatNumber(state.current) + '!';
+        break;
+      default: return;
+    }
+    var resultStr = (result === undefined || isNaN(result)) ? 'Error' : String(result);
+    pushHistory(label, formatNumber(resultStr));
+    state.current = resultStr;
+    state.justEvaluated = true;
+  }
+
+  function insertConstant(action){
+    if (state.justEvaluated){ state.justEvaluated = false; }
+    state.current = action === 'pi' ? String(Math.PI) : String(Math.E);
+  }
+
+  function handleAction(action){
+    switch(action){
+      case 'clear': clearAll(); break;
+      case 'negate': negate(); break;
+      case 'percent': percent(); break;
+      case 'decimal': inputDecimal(); break;
+      case 'equals': evaluate(false); break;
+      case 'add': case 'subtract': case 'multiply': case 'divide': case 'pow': case 'mod':
+        setOperator(action); break;
+      case 'sin': case 'cos': case 'tan': case 'sqrt': case 'square':
+      case 'log': case 'ln': case 'inv': case 'factorial':
+        applyUnaryFunc(action); break;
+      case 'pi': case 'e':
+        insertConstant(action); break;
+      case 'openparen': case 'closeparen':
+        // Parentheses are visual-only in this simple stepwise calculator; ignored safely.
+        break;
+    }
+    updateDisplay();
+  }
+
+  function renderHistory(){
+    if (history.length === 0){
+      historyListEl.innerHTML = '<div class="history-empty">No calculations yet</div>';
+      return;
+    }
+    historyListEl.innerHTML = '';
+    history.forEach(function(item){
+      var row = document.createElement('div');
+      row.className = 'history-item';
+      row.innerHTML = '<span class="h-expr">' + item.expr + ' =</span><span class="h-result">' + item.result + '</span>';
+      row.addEventListener('click', function(){
+        state.current = String(parseFloat(item.result));
+        state.previous = null;
+        state.operator = null;
+        state.justEvaluated = true;
+        updateDisplay();
+      });
+      historyListEl.appendChild(row);
+    });
+  }
+
+  clearHistoryBtn.addEventListener('click', function(){
+    history = [];
+    renderHistory();
+  });
+
+  keysEl.addEventListener('click', function(e){
+    var el = e.target.closest('.key');
+    if (!el) return;
+    if (el.style.visibility === 'hidden') return;
+    if (el.dataset.num !== undefined){
+      inputDigit(el.dataset.num);
+      updateDisplay();
+    } else if (el.dataset.action){
+      handleAction(el.dataset.action);
+    }
+  });
+
+  // Mode toggle
+  function setMode(mode){
+    if (mode === 'scientific'){
+      keysEl.classList.add('scientific');
+      modeSciBtn.classList.add('active');
+      modeNormalBtn.classList.remove('active');
+    } else {
+      keysEl.classList.remove('scientific');
+      modeNormalBtn.classList.add('active');
+      modeSciBtn.classList.remove('active');
+    }
+    try { localStorage.setItem('calc-mode', mode); } catch(e){}
+  }
+  modeNormalBtn.addEventListener('click', function(){ setMode('normal'); });
+  modeSciBtn.addEventListener('click', function(){ setMode('scientific'); });
+
+  // Restore saved mode preference (falls back silently if storage unavailable)
+  try {
+    var savedMode = localStorage.getItem('calc-mode');
+    if (savedMode === 'scientific') setMode('scientific');
+  } catch(e){}
+
+  // Tooltip toggle
+  infoBtn.addEventListener('click', function(e){
+    e.stopPropagation();
+    tooltipBox.classList.toggle('show');
+  });
+  document.addEventListener('click', function(e){
+    if (!tooltipBox.contains(e.target) && e.target !== infoBtn){
+      tooltipBox.classList.remove('show');
+    }
+  });
+
+  document.addEventListener('keydown', function(e){
+    if (e.key >= '0' && e.key <= '9'){
+      inputDigit(e.key);
+      updateDisplay();
+      e.preventDefault();
+    } else if (e.key === '.'){
+      inputDecimal();
+      updateDisplay();
+      e.preventDefault();
+    } else if (e.key === '+'){
+      handleAction('add'); e.preventDefault();
+    } else if (e.key === '-'){
+      handleAction('subtract'); e.preventDefault();
+    } else if (e.key === '*'){
+      handleAction('multiply'); e.preventDefault();
+    } else if (e.key === '/'){
+      handleAction('divide'); e.preventDefault();
+    } else if (e.key === 'Enter' || e.key === '='){
+      handleAction('equals'); e.preventDefault();
+    } else if (e.key === 'Backspace'){
+      backspace(); updateDisplay(); e.preventDefault();
+    } else if (e.key === 'Escape'){
+      clearAll(); updateDisplay(); e.preventDefault();
+    } else if (e.key === '%'){
+      handleAction('percent'); e.preventDefault();
+    }
+  });
+
+  updateDisplay();
+  renderHistory();
+})();
+</script>
+</body>
+</html>
